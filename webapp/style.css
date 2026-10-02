@@ -1,0 +1,53 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #171717;
+    font-family: sans-serif;
+    color: white;
+}
+
+.game {
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    background: #252525;
+    padding: 30px 20px;
+    border-radius: 20px;
+}
+
+h1 {
+    margin-bottom: 25px;
+}
+
+#players {
+    background: #333;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+#dice {
+    font-size: 100px;
+    margin: 20px 0;
+}
+
+#result {
+    font-size: 20px;
+    margin: 20px 0;
+}
+
+#rollButton {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+}
