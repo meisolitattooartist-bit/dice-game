@@ -1,0 +1,62 @@
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+)
+
+# =========================
+# تنظیمات
+# =========================
+
+BOT_TOKEN = BOT_TOKEN ="8849198682:AAHw_0mjZMK6RTTVvuNnhkMFhPjF-fylME0"
+
+# آیدی یا یوزرنیم کانال
+# مثال:
+# CHANNEL = "@MyChannel"
+CHANNEL = "@YourChannel"
+
+# بازی‌های فعال
+games = {}
+
+
+# =========================
+# شروع ربات
+# =========================
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        [InlineKeyboardButton("🎲 ساخت بازی", callback_data="create_game")]
+    ]
+
+    await update.message.reply_text(
+        "🎲 به بازی تاس خوش آمدی!\n\n"
+        "برای ساخت یک بازی روی دکمه زیر بزن:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================
+# اجرای برنامه
+# =========================
+
+def main():
+    app = Application.builder().token(BOT_TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+
+grep -n "BOT_TOKEN\|Application\|run_polling\|async def start" ~/dice_game/bot.py
+    print("🎲 Dice Bot is running...")
+
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
+grep -n "BOT_TOKEN\|Application\|run_polling\|async def start" ~/dice_game/bot.py
+cd ~/dice_game
+sed -n '1,80p' bot.py
+cd ~/dice_game
+sed -n '1,80p' bot.py
+
