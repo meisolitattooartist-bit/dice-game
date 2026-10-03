@@ -77,7 +77,7 @@ async function loadRoom() {
 
         if (insertError) {
             console.error(insertError);
-            result.textContent = "❌ ساخت اتاق انجام نشد";
+            result.textContent = "❌ " + (insertError.message || insertError.code || "خطای ناشناخته");
             return;
         }
 
