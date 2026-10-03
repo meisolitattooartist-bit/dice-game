@@ -1,0 +1,2 @@
+window.SUPABASE_URL = 'https://leghhcfmirosoozcwnsz.supabase.co/rest/v1';
+window.SUPABASE_KEY = 'sb_publishable_gN2n6F9qJlQE_NBVHe5WSw_yQbgk1v9';

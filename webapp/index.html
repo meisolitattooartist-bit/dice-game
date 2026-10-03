@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>🎲 بازی تاس</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="style.css">
+<script src="config.js"></script>
+</head>
+
+<body>
+<div class="app">
+
+  <header>
+    <h1>🎲 بازی تاس</h1>
+    <div id="roomCode" class="room-code"></div>
+  </header>
+
+  <section id="setup" class="screen">
+    <h2>ساخت بازی</h2>
+    <p>تعداد بازیکنان را انتخاب کن</p>
+
+    <div class="players-select">
+      <button data-count="2">۲ نفر</button>
+      <button data-count="4">۴ نفر</button>
+      <button data-count="6">۶ نفر</button>
+      <button data-count="10">۱۰ نفر</button>
+    </div>
+
+    <button id="createBtn" class="main-btn">🎲 ساخت اتاق</button>
+    <div id="setupMsg"></div>
+  </section>
+
+  <section id="waiting" class="screen hidden">
+    <h2>⏳ اتاق انتظار</h2>
+
+    <div class="room-box">
+      <div>کد اتاق</div>
+      <strong id="waitingRoom"></strong>
+    </div>
+
+    <button id="inviteBtn" class="main-btn">📨 دعوت بازیکن</button>
+
+    <div id="waitingPlayers"></div>
+
+    <button id="startBtn" class="main-btn hidden">🚀 شروع بازی</button>
+    <p id="waitingMsg"></p>
+  </section>
+
+  <section id="game" class="screen hidden">
+
+    <div class="game-top">
+      <div>اتاق: <b id="gameRoom"></b></div>
+      <div id="roundText">دور ۱ از ۳</div>
+    </div>
+
+    <div id="turnText" class="turn"></div>
+
+    <div class="dice-area">
+      <div id="dice" class="dice">
+        <span id="diceNumber">?</span>
+      </div>
+    </div>
+
+    <button id="rollBtn" class="roll-btn">🎲 انداختن تاس</button>
+
+    <div id="myRolls" class="my-rolls"></div>
+
+    <div id="scoreBoard"></div>
+  </section>
+
+  <section id="result" class="screen hidden">
+    <h2>🏆 نتیجه بازی</h2>
+    <div id="results"></div>
+    <button id="newGameBtn" class="main-btn">🔄 بازی جدید</button>
+  </section>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
