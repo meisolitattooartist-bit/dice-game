@@ -136,6 +136,62 @@ function render() {
     }
 }
 
+
+function showPlayerCount() {
+    result.textContent =
+        "🎲 تعداد بازیکنان را انتخاب کن:";
+
+    rollButton.style.display = "none";
+
+    let box = document.getElementById("playerCountBox");
+
+    if (!box) {
+        box = document.createElement("div");
+        box.id = "playerCountBox";
+        result.after(box);
+    }
+
+    box.innerHTML = "";
+
+    [2, 4, 6, 10].forEach(count => {
+        const button = document.createElement("button");
+        button.textContent = "👥 " + count + " نفر";
+        button.style.margin = "5px";
+
+        button.onclick = async () => {
+            maxPlayers = count;
+
+            const list = getPlayers();
+
+            if (!list.some(p => String(p.id) === String(me.id))) {
+                list.push({...me, rolls: []});
+            }
+
+            const { data, error } =
+                await supabaseClient
+                    .from("game_rooms")
+                    .update({
+                        players: list,
+                        status: "waiting:" + count
+                    })
+                    .eq("room_id", roomId)
+                    .select("id,room_id,players,status")
+                    .single();
+
+            if (error) {
+                result.textContent = "❌ " + error.message;
+                return;
+            }
+
+            room = data;
+            box.innerHTML = "";
+            render();
+        };
+
+        box.appendChild(button);
+    });
+}
+
 async function loadRoom() {
 
     const hasRoom = !!roomId;
