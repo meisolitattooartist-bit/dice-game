@@ -4,49 +4,43 @@ const rollButton = document.getElementById("rollButton");
 const playerName = document.getElementById("playerName");
 const inviteButton = document.getElementById("inviteButton");
 
-const diceFaces = ["⚀","⚁","⚂","⚃","⚄","⚅"];
-
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
-const params = new URLSearchParams(window.location.search);
+const faces = ["⚀","⚁","⚂","⚃","⚄","⚅"];
 
+const params = new URLSearchParams(location.search);
 let roomId = params.get("room");
 
 if (!roomId) {
-    roomId = Math.random()
-        .toString(36)
-        .slice(2, 8)
-        .toUpperCase();
-
-    history.replaceState(
-        null,
-        "",
-        `${window.location.pathname}?room=${roomId}`
-    );
+    roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    history.replaceState(null, "", "?room=" + roomId);
 }
 
-if (window.Telegram?.WebApp) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
+const tg = window.Telegram?.WebApp;
+
+if (tg) {
+    tg.ready();
+    tg.expand();
 }
 
-const tgUser =
-    window.Telegram?.WebApp?.initDataUnsafe?.user;
+const tgUser = tg?.initDataUnsafe?.user;
 
-const currentUser = tgUser || {
-    id: "guest-" + Math.random().toString(36).slice(2),
-    first_name: "مهمان"
+const me = {
+    id: String(
+        tgUser?.id ||
+        ("guest-" + Math.random().toString(36).substring(2))
+    ),
+    name:
+        tgUser?.first_name ||
+        tgUser?.username ||
+        "مهمان",
+    rolls: []
 };
 
-playerName.textContent =
-    currentUser.first_name ||
-    currentUser.username ||
-    "بازیکن";
-
-const myId = String(currentUser.id);
+playerName.textContent = me.name;
 
 let room = null;
 
@@ -57,48 +51,50 @@ function getPlayers() {
 }
 
 function render() {
-    const players = getPlayers();
+    const list = getPlayers();
 
-    const lines = [];
+    let output =
+        "🎲 اتاق: " + roomId + "\n" +
+        "👥 تعداد بازیکنان: " + list.length + "\n\n";
 
-    lines.push(`🎲 اتاق: ${roomId}`);
-    lines.push(`👥 تعداد بازیکنان: ${players.length}`);
-    lines.push("");
-
-    players.forEach((p, index) => {
-        const rolls = Array.isArray(p.rolls)
-            ? p.rolls
-            : [];
+    list.forEach((p, index) => {
+        const rolls =
+            Array.isArray(p.rolls)
+                ? p.rolls
+                : [];
 
         const total = rolls.reduce(
             (sum, n) => sum + Number(n),
             0
         );
 
-        lines.push(
-            `${index + 1}. ${p.name}  🎲 ${rolls.length}/3  🏆 ${total}`
-        );
+        output +=
+            `${index + 1}. ${p.name}\n` +
+            `   🎲 تاس: ${rolls.length}/3\n` +
+            `   🏆 مجموع: ${total}\n\n`;
     });
 
-    result.textContent = lines.join("\n");
+    result.textContent = output;
 
-    const me = players.find(
-        p => String(p.id) === myId
+    const mine = list.find(
+        p => String(p.id) === me.id
     );
 
-    const myRolls = me?.rolls || [];
+    const count = mine?.rolls?.length || 0;
 
-    rollButton.disabled = myRolls.length >= 3;
+    rollButton.disabled = count >= 3;
 
-    if (myRolls.length >= 3) {
-        rollButton.textContent = "✅ سه تاس کامل شد";
+    if (count >= 3) {
+        rollButton.textContent =
+            "✅ سه تاس کامل شد";
     } else {
         rollButton.textContent =
-            `🎲 ریختن تاس (${myRolls.length + 1}/3)`;
+            `🎲 ریختن تاس ${count + 1}/3`;
     }
 }
 
 async function loadRoom() {
+
     const { data, error } =
         await supabaseClient
             .from("game_rooms")
@@ -113,24 +109,16 @@ async function loadRoom() {
     }
 
     if (!data) {
-        const newPlayer = {
-            id: myId,
-            name:
-                currentUser.first_name ||
-                currentUser.username ||
-                "بازیکن",
-            rolls: []
-        };
 
-        const { data: newRoom, error: insertError } =
+        const { data: created, error: insertError } =
             await supabaseClient
                 .from("game_rooms")
                 .insert({
                     room_id: roomId,
-                    players: [newPlayer],
+                    players: [me],
                     status: "waiting"
                 })
-                .select()
+                .select("*")
                 .single();
 
         if (insertError) {
@@ -139,41 +127,36 @@ async function loadRoom() {
             return;
         }
 
-        room = newRoom;
+        room = created;
         render();
         return;
     }
 
     room = data;
 
-    let players = getPlayers();
+    const list = getPlayers();
 
-    const exists = players.some(
-        p => String(p.id) === myId
-    );
+    const alreadyJoined =
+        list.some(
+            p => String(p.id) === me.id
+        );
 
-    if (!exists) {
-        if (players.length >= 10) {
+    if (!alreadyJoined) {
+
+        if (list.length >= 10) {
             result.textContent =
                 "❌ ظرفیت اتاق تکمیل است.";
             rollButton.disabled = true;
             return;
         }
 
-        players.push({
-            id: myId,
-            name:
-                currentUser.first_name ||
-                currentUser.username ||
-                "بازیکن",
-            rolls: []
-        });
+        list.push(me);
 
         const { error: updateError } =
             await supabaseClient
                 .from("game_rooms")
                 .update({
-                    players: players
+                    players: list
                 })
                 .eq("room_id", roomId);
 
@@ -183,49 +166,47 @@ async function loadRoom() {
             return;
         }
 
-        room.players = players;
+        room.players = list;
     }
 
     render();
 }
 
 async function rollDice() {
-    const players = getPlayers();
 
-    const index = players.findIndex(
-        p => String(p.id) === myId
+    const list = getPlayers();
+
+    const index = list.findIndex(
+        p => String(p.id) === me.id
     );
 
-    if (index === -1) {
-        return;
-    }
+    if (index === -1) return;
 
-    const rolls = Array.isArray(players[index].rolls)
-        ? [...players[index].rolls]
-        : [];
+    const rolls =
+        Array.isArray(list[index].rolls)
+            ? [...list[index].rolls]
+            : [];
 
-    if (rolls.length >= 3) {
-        return;
-    }
+    if (rolls.length >= 3) return;
 
-    const number =
+    const value =
         Math.floor(Math.random() * 6) + 1;
 
-    rolls.push(number);
+    rolls.push(value);
 
-    players[index] = {
-        ...players[index],
+    list[index] = {
+        ...list[index],
         rolls: rolls
     };
 
     dice.textContent =
-        diceFaces[number - 1];
+        faces[value - 1];
 
     const { error } =
         await supabaseClient
             .from("game_rooms")
             .update({
-                players: players
+                players: list
             })
             .eq("room_id", roomId);
 
@@ -235,18 +216,9 @@ async function rollDice() {
         return;
     }
 
-    room.players = players;
+    room.players = list;
+
     render();
-
-    if (rolls.length === 3) {
-        const total = rolls.reduce(
-            (sum, n) => sum + Number(n),
-            0
-        );
-
-        result.textContent +=
-            `\n\n🏁 مجموع شما: ${total}`;
-    }
 }
 
 rollButton.addEventListener(
@@ -257,42 +229,42 @@ rollButton.addEventListener(
 inviteButton.addEventListener(
     "click",
     () => {
-        const inviteLink =
-            `${window.location.origin}` +
-            `${window.location.pathname}?room=${roomId}`;
 
-        const shareUrl =
-            `https://t.me/share/url?url=` +
-            `${encodeURIComponent(inviteLink)}` +
-            `&text=` +
-            `${encodeURIComponent(
+        const link =
+            location.origin +
+            location.pathname +
+            "?room=" +
+            roomId;
+
+        const share =
+            "https://t.me/share/url?url=" +
+            encodeURIComponent(link) +
+            "&text=" +
+            encodeURIComponent(
                 "🎲 بیا وارد بازی من شو!"
-            )}`;
+            );
 
-        if (window.Telegram?.WebApp) {
-            Telegram.WebApp.openTelegramLink(
-                shareUrl
-            );
+        if (tg) {
+            tg.openTelegramLink(share);
         } else {
-            window.open(
-                shareUrl,
-                "_blank"
-            );
+            location.href = share;
         }
     }
 );
 
 supabaseClient
-    .channel(`room-${roomId}`)
+    .channel("room-" + roomId)
     .on(
         "postgres_changes",
         {
             event: "*",
             schema: "public",
             table: "game_rooms",
-            filter: `room_id=eq.${roomId}`
+            filter:
+                "room_id=eq." + roomId
         },
         payload => {
+
             if (payload.new) {
                 room = payload.new;
                 render();
