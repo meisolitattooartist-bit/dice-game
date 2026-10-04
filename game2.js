@@ -66,10 +66,15 @@ function parseStatus(status) {
 
 const tgUser = tg?.initDataUnsafe?.user;
 
+const savedGuestId = sessionStorage.getItem("dice_guest_id") || (
+    "guest-" + Math.random().toString(36).substring(2)
+);
+
+sessionStorage.setItem("dice_guest_id", savedGuestId);
+
 const me = {
     id: String(
-        tgUser?.id ||
-        ("guest-" + Math.random().toString(36).substring(2))
+        tgUser?.id || savedGuestId
     ),
     name:
         tgUser?.first_name ||
