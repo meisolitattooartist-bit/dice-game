@@ -159,7 +159,28 @@ async function loadRoom() {
     }
 
     if (!data) {
-        result.textContent = "❌ اتاق پیدا نشد.";
+
+        const { data: created, error: insertError } =
+            await supabaseClient
+                .from("game_rooms")
+                .insert({
+                    room_id: roomId,
+                    players: [me],
+                    status: "waiting:0"
+                })
+                .select("id,room_id,players,status")
+                .single();
+
+        if (insertError) {
+            result.textContent =
+                "❌ " + insertError.message;
+            return;
+        }
+
+        room = created;
+        maxPlayers = 0;
+
+        showPlayerCount();
         return;
     }
 
