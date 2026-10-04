@@ -98,7 +98,7 @@ async function loadRoom() {
     const { data, error } =
         await supabaseClient
             .from("game_rooms")
-            .select("*")
+            .select("id,room_id,players,status")
             .eq("room_id", roomId)
             .maybeSingle();
 
@@ -118,7 +118,7 @@ async function loadRoom() {
                     players: [me],
                     status: "waiting"
                 })
-                .select("*")
+                .select("id,room_id,players,status")
                 .single();
 
         if (insertError) {
