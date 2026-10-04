@@ -138,6 +138,14 @@ function render() {
 
 async function loadRoom() {
 
+    const hasRoom = !!roomId;
+
+    if (!hasRoom) {
+        room = null;
+        showPlayerCount();
+        return;
+    }
+
     const { data, error } =
         await supabaseClient
             .from("game_rooms")
@@ -146,60 +154,72 @@ async function loadRoom() {
             .maybeSingle();
 
     if (error) {
-        result.textContent =
-            "❌ " + error.message;
+        result.textContent = "❌ " + error.message;
         return;
     }
 
     if (!data) {
-
-        const { data: created, error: insertError } =
-            await supabaseClient
-                .from("game_rooms")
-                .insert({
-                    room_id: roomId,
-                    players: [me],
-                    status: "waiting"
-                })
-                .select("id,room_id,players,status")
-                .single();
-
-        if (insertError) {
-            result.textContent =
-                "❌ " + insertError.message;
-            return;
-        }
-
-        room = created;
-        render();
+        result.textContent = "❌ اتاق پیدا نشد.";
         return;
     }
 
     room = data;
 
+    const state = parseStatus(room.status);
+
+    if (state.max > 0) {
+        maxPlayers = state.max;
+    }
+
     const list = getPlayers();
 
     const alreadyJoined =
         list.some(
-            p => String(p.id) === me.id
+            p => String(p.id) === String(me.id)
         );
 
     if (!alreadyJoined) {
 
-        if (list.length >= 10) {
+        if (
+            state.max > 0 &&
+            list.length >= state.max
+        ) {
             result.textContent =
-                "❌ ظرفیت اتاق تکمیل است.";
-            rollButton.disabled = true;
+                "❌ ظرفیت این اتاق تکمیل است.";
+            rollButton.style.display = "none";
             return;
         }
 
-        list.push(me);
+        if (state.state !== "waiting") {
+            result.textContent =
+                "❌ بازی شروع شده و امکان ورود نیست.";
+            rollButton.style.display = "none";
+            return;
+        }
+
+        list.push({
+            ...me,
+            rolls: []
+        });
+
+        let newStatus = room.status;
+
+        if (
+            state.max > 0 &&
+            list.length >= state.max
+        ) {
+            newStatus =
+                "playing:" +
+                state.max +
+                ":1:0";
+        }
 
         const { error: updateError } =
             await supabaseClient
                 .from("game_rooms")
                 .update({
-                    players: list
+                    players: list,
+                    status: newStatus
                 })
                 .eq("room_id", roomId);
 
@@ -210,6 +230,7 @@ async function loadRoom() {
         }
 
         room.players = list;
+        room.status = newStatus;
     }
 
     render();
