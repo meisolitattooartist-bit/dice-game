@@ -12,7 +12,7 @@ const supabaseClient = window.supabase.createClient(
 const faces = ["⚀","⚁","⚂","⚃","⚄","⚅"];
 
 const params = new URLSearchParams(location.search);
-let roomId = params.get("room");
+let roomId = null;
 
 if (!roomId) {
     roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
