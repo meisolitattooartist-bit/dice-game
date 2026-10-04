@@ -26,6 +26,44 @@ if (tg) {
     tg.expand();
 }
 
+function parseStatus(status) {
+    const parts = String(status || "").split(":");
+
+    if (parts[0] === "waiting") {
+        return {
+            state: "waiting",
+            max: Number(parts[1] || 0),
+            round: 0,
+            turn: 0
+        };
+    }
+
+    if (parts[0] === "playing") {
+        return {
+            state: "playing",
+            max: Number(parts[1] || 0),
+            round: Number(parts[2] || 1),
+            turn: Number(parts[3] || 0)
+        };
+    }
+
+    if (parts[0] === "finished") {
+        return {
+            state: "finished",
+            max: Number(parts[1] || 0),
+            round: 4,
+            turn: 0
+        };
+    }
+
+    return {
+        state: "waiting",
+        max: 0,
+        round: 0,
+        turn: 0
+    };
+}
+
 const tgUser = tg?.initDataUnsafe?.user;
 
 const me = {
