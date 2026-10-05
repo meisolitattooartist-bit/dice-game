@@ -44,7 +44,14 @@ function players(){
 }
 
 function total(p){
-    return (p.rolls || []).reduce((a,b)=>a+Number(b),0);
+    const rolls = Array.isArray(p?.rolls)
+        ? p.rolls.slice(0, 3)
+        : [];
+
+    return rolls.reduce((sum, n) => {
+        const v = Number(n);
+        return sum + (Number.isInteger(v) && v >= 1 && v <= 6 ? v : 0);
+    }, 0);
 }
 
 function render(){
