@@ -154,3 +154,17 @@ button:disabled{
   .title{font-size:23px}
   .dice{width:112px;height:112px;font-size:70px}
 }
+
+    
+.dice.rolling{
+  animation:diceRoll .9s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes diceRoll{
+  0%{transform:rotate(0deg) scale(1)}
+  20%{transform:rotate(-18deg) scale(1.08)}
+  40%{transform:rotate(22deg) scale(.94)}
+  60%{transform:rotate(-16deg) scale(1.06)}
+  80%{transform:rotate(10deg) scale(.98)}
+  100%{transform:rotate(0deg) scale(1)}
+}

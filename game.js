@@ -210,6 +210,12 @@ async function rollDice(){
 
     const value=Math.floor(Math.random()*6)+1;
 
+    dice.classList.remove("rolling");
+    void dice.offsetWidth;
+    dice.classList.add("rolling");
+
+    await new Promise(resolve=>setTimeout(resolve,900));
+
     dice.textContent=["⚀","⚁","⚂","⚃","⚄","⚅"][value-1];
 
     list[index]={
