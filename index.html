@@ -1,46 +1,23 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>🎲 Dice Game</title>
-
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <link rel="stylesheet" href="style.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎲 بازی تاس دونفره</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <div class="game">
-
-        <h1>🎲 بازی تاس</h1>
-
-        <div id="players">
-            👤 بازیکن: <span id="playerName">مهمان</span>
-        </div>
-
-        <div id="dice">⚄</div>
-
-        <div id="result">
-            آماده‌ای؟
-        </div>
-
-        <button id="rollButton">
-            🎲 انداختن تاس
-        </button>
-
-        <button id="inviteButton">
-            📤 دعوت بازیکن
-        </button>
-
-    </div>
-
-    <script src="game2.js"></script>
-
+<main class="game">
+<h1>🎲 بازی تاس</h1>
+<div id="result">در حال آماده‌سازی...</div>
+<div id="players"></div>
+<div id="dice">⚄</div>
+<button id="rollButton" type="button">🎲 انداختن تاس</button>
+<button id="inviteButton" type="button">📤 دعوت بازیکن</button>
+</main>
+<script src="game.js"></script>
 </body>
 </html>
