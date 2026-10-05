@@ -2,8 +2,8 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🎲 بازی تاس دونفره</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>🎲 بازی تاس</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -11,12 +11,36 @@
 </head>
 <body>
 <main class="game">
-<h1>🎲 بازی تاس</h1>
-<div id="result">در حال آماده‌سازی...</div>
-<div id="players"></div>
-<div id="dice">⚄</div>
-<button id="rollButton" type="button">🎲 انداختن تاس</button>
-<button id="inviteButton" type="button">📤 دعوت بازیکن</button>
+
+  <div class="top">
+    <div class="logo">🎲</div>
+    <div>
+      <div class="title">بازی تاس</div>
+      <div class="subtitle">نبرد دونفره</div>
+    </div>
+  </div>
+
+  <div id="result" class="result">در حال آماده‌سازی...</div>
+
+  <div id="players" class="players"></div>
+
+  <div class="dice-area">
+    <div class="dice-label">تاس</div>
+    <div id="dice" class="dice">⚄</div>
+  </div>
+
+  <button id="rollButton" class="roll" type="button">
+    🎲 انداختن تاس
+  </button>
+
+  <button id="inviteButton" class="invite" type="button">
+    📤 دعوت بازیکن
+  </button>
+
+  <div class="rules">
+    هر بازیکن ۳ بار تاس می‌اندازد
+  </div>
+
 </main>
 <script src="game.js"></script>
 </body>
